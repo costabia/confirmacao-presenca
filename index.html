@@ -4,16 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Confirmação de Presença | Bruna & Leopoldo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
   
   <style>
-    /* Reset e tipografia */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* Reset e Layout */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Lato', sans-serif;
       background-color: #faf9f7;
@@ -24,14 +19,11 @@
       min-height: 100vh;
       padding: 20px;
     }
-
     h1, h2 {
       font-family: 'Playfair Display', serif;
       font-weight: 400;
       color: #2c2c2c;
     }
-
-    /* Container principal com design super leve */
     .rsvp-container {
       background: #ffffff;
       max-width: 500px;
@@ -42,152 +34,84 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
       text-align: center;
     }
-
     .rsvp-header {
       margin-bottom: 40px;
       padding-bottom: 20px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
-
-    .rsvp-header h1 {
-      font-size: 2.2rem;
-      margin-bottom: 8px;
+    .rsvp-header h1 { font-size: 2.2rem; margin-bottom: 8px; }
+    .rsvp-header p { font-size: 0.9rem; letter-spacing: 1px; color: #888; text-transform: uppercase; }
+    
+    .step { display: none; animation: fadeIn 0.5s ease-in-out; }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .subtitle { font-size: 0.95rem; line-height: 1.5; color: #666; margin: 15px 0 30px; }
+    
+    .input-group { margin-bottom: 25px; text-align: left; }
+    input[type="text"] {
+      width: 100%; padding: 14px 15px; font-family: 'Lato', sans-serif; font-size: 1rem;
+      color: #333; background-color: transparent; border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 2px; outline: none; transition: border-color 0.3s ease;
     }
-
-    .rsvp-header p {
-      font-size: 0.9rem;
-      letter-spacing: 1px;
-      color: #888;
-      text-transform: uppercase;
-    }
-
-    /* Controle de Passos */
-    .step {
-      display: none;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .subtitle {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: #666;
-      margin: 15px 0 30px;
-    }
-
-    /* Inputs e Botões com traços delicados */
-    .input-group {
-      margin-bottom: 25px;
+    input[type="text"]:focus { border-color: rgba(0, 0, 0, 0.4); }
+    
+    /* Container Opcional de Acompanhantes */
+    .checkbox-container {
       text-align: left;
+      margin: 25px 0;
+      padding-top: 15px;
+      border-top: 1px dashed rgba(0,0,0,0.1);
     }
-
-    .input-group label {
-      display: block;
-      font-size: 0.85rem;
-      margin-bottom: 8px;
-      color: #555;
+    .checkbox-container h3 {
+      font-size: 0.9rem; color: #555; margin-bottom: 15px; font-weight: 600; letter-spacing: 0.5px;
     }
-
-    input[type="text"], select {
-      width: 100%;
-      padding: 14px 15px;
-      font-family: 'Lato', sans-serif;
-      font-size: 1rem;
-      color: #333;
-      background-color: transparent;
-      border: 1px solid rgba(0, 0, 0, 0.15);
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: 2px;
-      transition: border-color 0.3s ease;
-      outline: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
     }
-
-    input[type="text"]:focus, select:focus {
-      border-color: rgba(0, 0, 0, 0.4);
+    .checkbox-item:hover { background-color: #fcfbfa; }
+    .checkbox-item input[type="checkbox"] {
+      margin-right: 12px;
+      width: 16px;
+      height: 16px;
+      accent-color: #2c2c2c;
+      cursor: pointer;
+    }
+    .checkbox-item label {
+      font-size: 0.95rem;
+      color: #4a4a4a;
+      cursor: pointer;
+      width: 100%;
     }
 
     .btn-primary {
-      width: 100%;
-      padding: 15px;
-      background-color: #2c2c2c;
-      color: #fff;
-      border: none;
-      border-radius: 2px;
-      font-size: 0.9rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      font-family: 'Lato', sans-serif;
+      width: 100%; padding: 15px; background-color: #2c2c2c; color: #fff; border: none;
+      border-radius: 2px; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: background-color 0.3s ease; font-family: 'Lato', sans-serif;
     }
-
-    .btn-primary:hover {
-      background-color: #4a4a4a;
-    }
-
-    /* Mensagens de Feedback */
-    .feedback-msg {
-      margin-top: 20px;
-      font-size: 0.85rem;
-      padding: 15px;
-      border-radius: 2px;
-      line-height: 1.4;
-    }
-
-    .feedback-msg.error {
-      background-color: #fffbfb;
-      border: 1px solid rgba(220, 53, 69, 0.1);
-      color: #d9534f;
-    }
-
-    .feedback-msg a {
-      color: #d9534f;
-      text-decoration: underline;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Loading Overlay */
+    .btn-primary:hover { background-color: #4a4a4a; }
+    
+    .feedback-msg { margin-top: 20px; font-size: 0.85rem; padding: 15px; border-radius: 2px; line-height: 1.4; }
+    .feedback-msg.error { background-color: #fffbfb; border: 1px solid rgba(220, 53, 69, 0.1); color: #d9534f; }
+    .feedback-msg a { color: #d9534f; text-decoration: underline; }
+    .hidden { display: none !important; }
+    
     #loading-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255, 255, 255, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.8);
+      display: flex; justify-content: center; align-items: center; z-index: 999;
     }
-
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 1px solid rgba(0,0,0,0.1);
-      border-top-color: #2c2c2c;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+      width: 40px; height: 40px; border: 1px solid rgba(0,0,0,0.1);
+      border-top-color: #2c2c2c; border-radius: 50%; animation: spin 1s linear infinite;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @media (max-width: 600px) {
-      .rsvp-container {
-        padding: 40px 20px;
-        border: none;
-        box-shadow: none;
-        background: transparent;
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -208,19 +132,22 @@
       
       <button id="btn-search" class="btn-primary">Buscar Convite</button>
       
-      <div id="error-msg" class="feedback-msg error hidden">
-        Não encontramos seu nome. Por favor, tente novamente ou entre em contato com a 
-        <a href="https://wa.me/5511999999999" target="_blank">assessoria via WhatsApp</a>.
-      </div>
+      <div id="error-msg" class="feedback-msg error hidden"></div>
     </section>
 
     <section id="step-2" class="step">
       <h2 id="welcome-name">Olá, Nome!</h2>
-      <p class="subtitle">Que alegria ter você conosco. Selecione quantos acompanhantes irão com você.</p>
+      <p class="subtitle">Selecione abaixo todas as pessoas do seu convite que irão comparecer ao evento.</p>
       
-      <div class="input-group">
-        <label for="companions-count">Acompanhantes confirmados:</label>
-        <select id="companions-count"></select>
+      <div class="checkbox-container">
+        <h3>Confirmar presença de:</h3>
+        
+        <div class="checkbox-item" style="background-color: #faf9f7;">
+          <input type="checkbox" id="main-guest-check" checked disabled>
+          <label id="main-guest-label" for="main-guest-check">Nome do Convidado Principal</label>
+        </div>
+        
+        <div id="companions-list"></div>
       </div>
       
       <button id="btn-confirm" class="btn-primary">Confirmar Presença</button>
@@ -237,40 +164,26 @@
   </main>
 
   <script>
-    // A sua URL já está configurada aqui!
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_7vqW8ksYq5II7wCWy0jr5Hpq40aLkguQ0eZ20wr7r9bEGyIJFa7A5LGEEIuTpULi/exec';
 
-    // Elementos do DOM
     const step1 = document.getElementById('step-1');
     const step2 = document.getElementById('step-2');
     const step3 = document.getElementById('step-3');
     const btnSearch = document.getElementById('btn-search');
     const btnConfirm = document.getElementById('btn-confirm');
     const inputName = document.getElementById('guest-name');
-    const selectCompanions = document.getElementById('companions-count');
     const errorMsg = document.getElementById('error-msg');
     const welcomeName = document.getElementById('welcome-name');
+    const mainGuestLabel = document.getElementById('main-guest-label');
+    const companionsList = document.getElementById('companions-list');
     const loader = document.getElementById('loading-overlay');
 
-    // Estado Global
-    let guestData = {
-      nome: '',
-      permitidos: 0
-    };
+    let globalGuestData = { nome: '', permitidos: 0 };
 
-    // Exibe/Esconde loading
-    const toggleLoading = (show) => {
-      show ? loader.classList.remove('hidden') : loader.classList.add('hidden');
-    };
+    const toggleLoading = (show) => { show ? loader.classList.remove('hidden') : loader.classList.add('hidden'); };
+    const goToStep = (stepElement) => { document.querySelectorAll('.step').forEach(el => el.classList.remove('active')); stepElement.classList.add('active'); };
 
-    // Alternância de telas
-    const goToStep = (stepElement) => {
-      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-      stepElement.classList.add('active');
-    };
-
-    // Lógica de Busca (GET)
-    // Lógica de Busca (GET)
+    // LÓGICA DE BUSCA (GET)
     btnSearch.addEventListener('click', async () => {
       const nomeDigitado = inputName.value.trim();
       if (!nomeDigitado) return;
@@ -283,49 +196,67 @@
         const result = await response.json();
 
         if (result.status === 'found') {
-          guestData.nome = result.nome_exato;
-          guestData.permitidos = parseInt(result.acompanhantes_permitidos, 10);
+          globalGuestData.nome = result.nome_exato;
+          globalGuestData.permitidos = result.acompanhantes_permitidos;
           
-          // Popular Select
-          selectCompanions.innerHTML = '';
-          for (let i = 0; i <= guestData.permitidos; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i === 0 ? "Vou sozinho(a)" : `${i} acompanhante(s)`;
-            selectCompanions.appendChild(option);
+          welcomeName.textContent = `Olá, ${globalGuestData.nome}!`;
+          mainGuestLabel.textContent = `${globalGuestData.nome} (Convidado Principal)`;
+          
+          companionsList.innerHTML = '';
+          
+          if (result.acompanhantes && result.acompanhantes.length > 0) {
+            result.acompanhantes.forEach((nomeAcomp, index) => {
+              const itemDiv = document.createElement('div');
+              itemDiv.className = 'checkbox-item';
+              
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.id = `acomp-${index}`;
+              checkbox.className = 'companion-checkbox';
+              checkbox.value = nomeAcomp;
+              
+              const label = document.createElement('label');
+              label.htmlFor = `acomp-${index}`;
+              label.textContent = nomeAcomp;
+              
+              itemDiv.appendChild(checkbox);
+              itemDiv.appendChild(label);
+              companionsList.appendChild(itemDiv);
+            });
           }
-
-          welcomeName.textContent = `Olá, ${guestData.nome}!`;
+          
           goToStep(step2);
 
         } else if (result.status === 'already_confirmed') {
-          // NOVO: Bloqueia e avisa se a pessoa já estiver na aba de confirmados
-          errorMsg.innerHTML = `Sua presença já foi confirmada com <strong>${result.acompanhantes_confirmados} acompanhante(s)</strong>. Caso precise alterar, fale com a <a href="https://wa.me/5511999999999" target="_blank">assessoria</a>.`;
+          errorMsg.innerHTML = `Presença já confirmada anteriormente.<br><small>Confirmados: ${result.detalhes}</small>.<br>Para alterações, contate a <a href="https://wa.me/5511999999999" target="_blank">assessoria</a>.`;
           errorMsg.classList.remove('hidden');
-
         } else {
-          // Mantém o erro de não encontrado padrão
-          errorMsg.innerHTML = `Não encontramos seu nome. Por favor, tente novamente ou entre em contato com a <a href="https://wa.me/5511999999999" target="_blank">assessoria via WhatsApp</a>.`;
+          errorMsg.innerHTML = `Não encontramos seu nome. Por favor, verifique a digitação ou fale com a <a href="https://wa.me/5511999999999" target="_blank">assessoria via WhatsApp</a>.`;
           errorMsg.classList.remove('hidden');
         }
       } catch (error) {
-        console.error('Erro ao buscar convidado:', error);
-        errorMsg.textContent = "Ocorreu um erro de conexão. Tente novamente.";
+        errorMsg.textContent = "Erro de comunicação com o servidor. Tente novamente.";
         errorMsg.classList.remove('hidden');
       } finally {
         toggleLoading(false);
       }
     });
 
-    
-    // Lógica de Confirmação (POST)
+    // LÓGICA DE CONFIRMAÇÃO (POST)
     btnConfirm.addEventListener('click', async () => {
-      const acompanhantesSelecionados = parseInt(selectCompanions.value, 10);
+      let acompanhantesQueVao = [];
       
+      const checkboxes = document.querySelectorAll('.companion-checkbox');
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          acompanhantesQueVao.push(cb.value);
+        }
+      });
+
       const payload = {
-        nome_principal: guestData.nome,
-        acompanhantes_permitidos: guestData.permitidos,
-        acompanhantes_confirmados: acompanhantesSelecionados
+        nome_principal: globalGuestData.nome,
+        acompanhantes_permitidos: globalGuestData.permitidos,
+        acompanhantes_que_vao: acompanhantesQueVao
       };
 
       toggleLoading(true);
@@ -333,21 +264,18 @@
       try {
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
-          // text/plain previne o CORS preflight no GAS
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
 
         const result = await response.json();
-
         if (result.status === 'success') {
           goToStep(step3);
         } else {
-          alert("Houve um erro ao registrar sua confirmação. Tente novamente.");
+          alert("Erro ao salvar dados na planilha.");
         }
       } catch (error) {
-        console.error('Erro na confirmação:', error);
-        alert("Erro de conexão. Por favor, verifique sua rede.");
+        alert("Erro de rede ao processar confirmação.");
       } finally {
         toggleLoading(false);
       }

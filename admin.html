@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Presença | Bruna & Leopoldo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #faf9f7;
+      color: #34372a;
+      font-family: 'Montserrat', sans-serif;
+      padding: 24px;
+    }
+    .shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+    .login-card, .panel {
+      background: #fff;
+      border: 1px solid #deded4;
+      border-radius: 6px;
+      box-shadow: 0 10px 28px rgba(111, 114, 83, 0.16);
+    }
+    .login-card {
+      max-width: 420px;
+      margin: 10vh auto 0;
+      padding: 34px;
+      text-align: center;
+    }
+    h1 {
+      color: #6f7253;
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: #6f7253;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      color: #555844;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    input {
+      width: 100%;
+      border: 1px solid #9a9b8f;
+      border-radius: 3px;
+      color: #34372a;
+      font: inherit;
+      padding: 13px 14px;
+    }
+    button {
+      border: 0;
+      border-radius: 3px;
+      background: #6f7253;
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 13px 18px;
+      text-transform: uppercase;
+    }
+    button:hover { background: #555844; }
+    button:disabled { cursor: not-allowed; opacity: 0.65; }
+    .login-card button { width: 100%; margin-top: 16px; }
+    .error {
+      background: #fff7f6;
+      border: 1px solid #f0c8c1;
+      border-radius: 3px;
+      color: #9a2e25;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      margin-top: 14px;
+      padding: 12px;
+    }
+    .hidden { display: none !important; }
+    .panel { padding: 28px; }
+    .panel-header {
+      align-items: flex-start;
+      border-bottom: 1px solid #deded4;
+      display: flex;
+      gap: 18px;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+    }
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .updated {
+      color: #6f7253;
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+    .cards {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-bottom: 24px;
+    }
+    .metric {
+      border: 1px solid #deded4;
+      border-radius: 6px;
+      padding: 16px;
+    }
+    .metric span {
+      color: #6f7253;
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .metric strong {
+      color: #34372a;
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+    }
+    .section-title {
+      align-items: baseline;
+      display: flex;
+      justify-content: space-between;
+      margin: 28px 0 12px;
+    }
+    h2 {
+      color: #555844;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .count-label {
+      color: #777a64;
+      font-size: 0.82rem;
+    }
+    .table-wrap {
+      border: 1px solid #deded4;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      min-width: 840px;
+      width: 100%;
+    }
+    th, td {
+      border-bottom: 1px solid #ecece5;
+      font-size: 0.86rem;
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #e0e2d6;
+      color: #34372a;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      position: sticky;
+      top: 0;
+      text-transform: uppercase;
+    }
+    tbody tr:hover { background: #faf9f7; }
+    .center { text-align: center; }
+    .badge {
+      border-radius: 999px;
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 9px;
+    }
+    .badge.yes { background: #dcefd8; color: #255c2a; }
+    .badge.no { background: #f8ded8; color: #8e2b22; }
+    .empty {
+      border: 1px dashed #c8c9bc;
+      border-radius: 6px;
+      color: #6f7253;
+      font-size: 0.9rem;
+      padding: 18px;
+      text-align: center;
+    }
+    @media (max-width: 860px) {
+      body { padding: 14px; }
+      .panel { padding: 18px; }
+      .panel-header { display: block; }
+      .panel-actions { justify-content: flex-start; margin-top: 14px; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      .cards { grid-template-columns: 1fr; }
+      .login-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section id="login" class="login-card">
+      <h1>Painel de presença</h1>
+      <p class="subtitle">Acesso restrito para acompanhar confirmações da Welcome Party.</p>
+      <label for="password">Senha</label>
+      <input id="password" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Digite a senha">
+      <button id="login-button">Entrar</button>
+      <div id="login-error" class="error hidden"></div>
+    </section>
+
+    <section id="panel" class="panel hidden">
+      <header class="panel-header">
+        <div>
+          <h1>Bruna & Leopoldo</h1>
+          <p class="subtitle">Resumo de confirmações da Welcome Party.</p>
+          <p id="updated" class="updated"></p>
+        </div>
+        <div class="panel-actions">
+          <button id="refresh-button">Atualizar</button>
+          <button id="logout-button" type="button">Sair</button>
+        </div>
+      </header>
+
+      <section class="cards">
+        <div class="metric"><span>Pessoas confirmadas</span><strong id="people-count">0</strong></div>
+        <div class="metric"><span>Pessoas não confirmadas</span><strong id="people-pending-count">0</strong></div>
+        <div class="metric"><span>Convites confirmados</span><strong id="confirmed-invites">0</strong></div>
+        <div class="metric"><span>Faltam confirmar</span><strong id="pending-invites">0</strong></div>
+        <div class="metric"><span>Total de convites</span><strong id="total-invites">0</strong></div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Confirmados</h2>
+          <span id="confirmed-count-label" class="count-label"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Convite/Família</th>
+                <th class="center">Titular vai</th>
+                <th class="center">Acomp. permitidos</th>
+                <th class="center">Acomp. confirmados</th>
+                <th>Todos confirmados</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="confirmed-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Pendentes</h2>
+          <span id="pending-count-label" class="count-label"></span>
+        </div>
+        <div id="pending-empty" class="empty hidden">Todos os convites já foram confirmados.</div>
+        <div id="pending-table" class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Convite/Família</th>
+                <th class="center">Acomp. permitidos</th>
+                <th>Acompanhantes do convite</th>
+              </tr>
+            </thead>
+            <tbody id="pending-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_7vqW8ksYq5II7wCWy0jr5Hpq40aLkguQ0eZ20wr7r9bEGyIJFa7A5LGEEIuTpULi/exec';
+    const PASSWORD = '0909';
+
+    const loginSection = document.getElementById('login');
+    const panelSection = document.getElementById('panel');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('login-button');
+    const refreshButton = document.getElementById('refresh-button');
+    const logoutButton = document.getElementById('logout-button');
+    const loginError = document.getElementById('login-error');
+
+    const showLoginError = (message) => {
+      loginError.textContent = message;
+      loginError.classList.remove('hidden');
+    };
+
+    const setLoading = (loading) => {
+      loginButton.disabled = loading;
+      refreshButton.disabled = loading;
+      loginButton.textContent = loading ? 'Carregando...' : 'Entrar';
+      refreshButton.textContent = loading ? 'Atualizando...' : 'Atualizar';
+    };
+
+    const formatList = (items) => {
+      if (!Array.isArray(items) || items.length === 0) return '-';
+      return items.join('; ');
+    };
+
+    const render = (data) => {
+      document.getElementById('people-count').textContent = data.resumo.pessoas_confirmadas;
+      document.getElementById('people-pending-count').textContent = data.resumo.pessoas_nao_confirmadas;
+      document.getElementById('confirmed-invites').textContent = data.resumo.convites_confirmados;
+      document.getElementById('pending-invites').textContent = data.resumo.convites_pendentes;
+      document.getElementById('total-invites').textContent = data.resumo.total_convites;
+      document.getElementById('updated').textContent = `Atualizado em ${data.atualizado_em}`;
+
+      const confirmedBody = document.getElementById('confirmed-body');
+      confirmedBody.innerHTML = '';
+      data.confirmados.forEach((item) => {
+        const row = document.createElement('tr');
+        const titularVai = String(item.titular_vai || '').toLowerCase() === 'sim';
+        row.innerHTML = `
+          <td>${item.nome_principal}</td>
+          <td class="center"><span class="badge ${titularVai ? 'yes' : 'no'}">${item.titular_vai || '-'}</span></td>
+          <td class="center">${item.acompanhantes_permitidos}</td>
+          <td class="center">${item.acompanhantes_confirmados}</td>
+          <td>${formatList(item.todos_confirmados)}</td>
+          <td>${item.data_confirmacao || '-'}</td>
+        `;
+        confirmedBody.appendChild(row);
+      });
+      document.getElementById('confirmed-count-label').textContent = `${data.confirmados.length} convite(s)`;
+
+      const pendingBody = document.getElementById('pending-body');
+      const pendingTable = document.getElementById('pending-table');
+      const pendingEmpty = document.getElementById('pending-empty');
+      pendingBody.innerHTML = '';
+      data.pendentes.forEach((item) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.nome_principal}</td>
+          <td class="center">${item.acompanhantes_permitidos}</td>
+          <td>${formatList(item.acompanhantes)}</td>
+        `;
+        pendingBody.appendChild(row);
+      });
+      document.getElementById('pending-count-label').textContent = `${data.pendentes.length} convite(s)`;
+      pendingTable.classList.toggle('hidden', data.pendentes.length === 0);
+      pendingEmpty.classList.toggle('hidden', data.pendentes.length > 0);
+    };
+
+    const loadDashboard = async () => {
+      setLoading(true);
+      loginError.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=admin&senha=${encodeURIComponent(PASSWORD)}`);
+        const data = await response.json();
+
+        if (data.status !== 'success') {
+          showLoginError(data.message || 'Não foi possível carregar o painel.');
+          return;
+        }
+
+        render(data);
+        loginSection.classList.add('hidden');
+        panelSection.classList.remove('hidden');
+      } catch (error) {
+        showLoginError('Erro ao carregar os dados. Tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loginButton.addEventListener('click', () => {
+      if (passwordInput.value.trim() !== PASSWORD) {
+        showLoginError('Senha inválida.');
+        passwordInput.focus();
+        return;
+      }
+      loadDashboard();
+    });
+
+    passwordInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        loginButton.click();
+      }
+    });
+
+    refreshButton.addEventListener('click', loadDashboard);
+    logoutButton.addEventListener('click', () => {
+      passwordInput.value = '';
+      panelSection.classList.add('hidden');
+      loginSection.classList.remove('hidden');
+      passwordInput.focus();
+    });
+  </script>
+</body>
+</html>

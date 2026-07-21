@@ -55,6 +55,8 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
     .subtitle { font-size: 0.95rem; line-height: 1.5; color: #6f7253; margin: 15px 0 30px; }
+    .support-note { font-size: 0.82rem; line-height: 1.45; color: #6f7253; margin-top: 14px; }
+    .support-note a { color: #6f7253; text-decoration: underline; }
     
     .input-group { margin-bottom: 25px; text-align: left; }
     input[type="text"] {
@@ -109,6 +111,7 @@
     .feedback-msg { margin-top: 20px; font-size: 0.85rem; padding: 15px; border-radius: 2px; line-height: 1.4; }
     .feedback-msg.error { background-color: #fffbfb; border: 1px solid rgba(220, 53, 69, 0.1); color: #d9534f; }
     .feedback-msg a { color: #d9534f; text-decoration: underline; }
+    .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
     .hidden { display: none !important; }
     
     #loading-overlay {
@@ -132,13 +135,14 @@
 
     <section id="step-1" class="step active">
       <h4>CONFIRME SUA PRESENÇA NA WELCOME PARTY</h4>
-      <p class="subtitle">Por favor, insira seu nome completo exatamente como consta no convite.</p>
+      <p class="subtitle">Por favor, insira o nome que está no convite.</p>
       
       <div class="input-group">
         <input type="text" id="guest-name" placeholder="Ex: Maria Eduarda Silva" autocomplete="off">
       </div>
       
       <button id="btn-search" class="btn-primary">Buscar Convite</button>
+      <p class="support-note">Problemas ou dúvidas para marcar presença? Fale pelo <a href="https://wa.me/553171527307" target="_blank">+55 31 7152-7307</a>.</p>
       
       <div id="error-msg" class="feedback-msg error hidden"></div>
     </section>
@@ -151,7 +155,7 @@
         <h3>Confirmar presença de:</h3>
         
         <div class="checkbox-item" style="background-color: #faf9f7;">
-          <input type="checkbox" id="main-guest-check" checked disabled>
+          <input type="checkbox" id="main-guest-check" checked>
           <label id="main-guest-label" for="main-guest-check">Nome do Convidado Principal</label>
         </div>
         
@@ -159,6 +163,7 @@
       </div>
       
       <button id="btn-confirm" class="btn-primary">Confirmar Presença</button>
+      <div id="confirm-error-msg" class="feedback-msg error hidden"></div>
     </section>
 
     <section id="step-3" class="step">
@@ -181,23 +186,51 @@
     const btnConfirm = document.getElementById('btn-confirm');
     const inputName = document.getElementById('guest-name');
     const errorMsg = document.getElementById('error-msg');
+    const confirmErrorMsg = document.getElementById('confirm-error-msg');
     const welcomeName = document.getElementById('welcome-name');
+    const mainGuestCheck = document.getElementById('main-guest-check');
     const mainGuestLabel = document.getElementById('main-guest-label');
     const companionsList = document.getElementById('companions-list');
     const loader = document.getElementById('loading-overlay');
+    const SUPPORT_WHATSAPP_URL = 'https://wa.me/553171527307';
+    const SUPPORT_LABEL = '+55 31 7152-7307';
 
-    let globalGuestData = { nome: '', permitidos: 0 };
+    let globalGuestData = { nome: '', permitidos: 0, acompanhantes: [] };
 
     const toggleLoading = (show) => { show ? loader.classList.remove('hidden') : loader.classList.add('hidden'); };
     const goToStep = (stepElement) => { document.querySelectorAll('.step').forEach(el => el.classList.remove('active')); stepElement.classList.add('active'); };
+    const showError = (element, message) => {
+      element.innerHTML = message;
+      element.classList.remove('hidden');
+    };
+    const clearError = (element) => {
+      element.innerHTML = '';
+      element.classList.add('hidden');
+    };
+    const setButtonsDisabled = (disabled) => {
+      btnSearch.disabled = disabled;
+      btnConfirm.disabled = disabled;
+    };
+    const getSelectedCompanions = () => {
+      const selected = [];
+      document.querySelectorAll('.companion-checkbox').forEach(cb => {
+        if (cb.checked) selected.push(cb.value);
+      });
+      return selected;
+    };
 
     // LÓGICA DE BUSCA (GET)
     btnSearch.addEventListener('click', async () => {
       const nomeDigitado = inputName.value.trim();
-      if (!nomeDigitado) return;
+      if (!nomeDigitado) {
+        showError(errorMsg, 'Digite o nome que está no convite antes de buscar.');
+        inputName.focus();
+        return;
+      }
 
-      errorMsg.classList.add('hidden');
+      clearError(errorMsg);
       toggleLoading(true);
+      setButtonsDisabled(true);
 
       try {
         const response = await fetch(`${SCRIPT_URL}?nome=${encodeURIComponent(nomeDigitado)}`);
@@ -206,14 +239,17 @@
         if (result.status === 'found') {
           globalGuestData.nome = result.nome_exato;
           globalGuestData.permitidos = result.acompanhantes_permitidos;
+          globalGuestData.acompanhantes = Array.isArray(result.acompanhantes) ? result.acompanhantes : [];
           
           welcomeName.textContent = `Olá, ${globalGuestData.nome}!`;
           mainGuestLabel.textContent = `${globalGuestData.nome} (Convidado Principal)`;
+          mainGuestCheck.checked = true;
+          clearError(confirmErrorMsg);
           
           companionsList.innerHTML = '';
           
-          if (result.acompanhantes && result.acompanhantes.length > 0) {
-            result.acompanhantes.forEach((nomeAcomp, index) => {
+          if (globalGuestData.acompanhantes.length > 0) {
+            globalGuestData.acompanhantes.forEach((nomeAcomp, index) => {
               const itemDiv = document.createElement('div');
               itemDiv.className = 'checkbox-item';
               
@@ -236,38 +272,51 @@
           goToStep(step2);
 
         } else if (result.status === 'already_confirmed') {
-          errorMsg.innerHTML = `Presença já confirmada anteriormente.<br><small>Confirmados: ${result.detalhes}</small>.<br>Para alterações, contate a <a href="https://wa.me/5511999999999" target="_blank">assessoria</a>.`;
-          errorMsg.classList.remove('hidden');
+          showError(errorMsg, `Presença já confirmada anteriormente.<br><small>Confirmados: ${result.detalhes}</small>.<br>Para alterações, dúvidas ou problemas, fale com a assessoria pelo <a href="${SUPPORT_WHATSAPP_URL}" target="_blank">${SUPPORT_LABEL}</a>.`);
         } else {
-          errorMsg.innerHTML = `Não encontramos seu nome. Por favor, verifique a digitação ou fale com a <a href="https://wa.me/5511999999999" target="_blank">assessoria via WhatsApp</a>.`;
-          errorMsg.classList.remove('hidden');
+          showError(errorMsg, `Não encontramos seu nome. Por favor, verifique a digitação ou fale com a assessoria pelo <a href="${SUPPORT_WHATSAPP_URL}" target="_blank">${SUPPORT_LABEL}</a>.`);
         }
       } catch (error) {
-        errorMsg.textContent = "Erro de comunicação com o servidor. Tente novamente.";
-        errorMsg.classList.remove('hidden');
+        showError(errorMsg, `Erro de comunicação com o servidor. Tente novamente ou fale com a assessoria pelo <a href="${SUPPORT_WHATSAPP_URL}" target="_blank">${SUPPORT_LABEL}</a>.`);
       } finally {
         toggleLoading(false);
+        setButtonsDisabled(false);
+      }
+    });
+
+    inputName.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        btnSearch.click();
       }
     });
 
     // LÓGICA DE CONFIRMAÇÃO (POST)
     btnConfirm.addEventListener('click', async () => {
-      let acompanhantesQueVao = [];
-      
-      const checkboxes = document.querySelectorAll('.companion-checkbox');
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          acompanhantesQueVao.push(cb.value);
-        }
-      });
+      clearError(confirmErrorMsg);
+
+      if (!globalGuestData.nome) {
+        showError(confirmErrorMsg, 'Busque o nome do convite antes de confirmar.');
+        goToStep(step1);
+        return;
+      }
+
+      const acompanhantesQueVao = getSelectedCompanions();
+
+      if (!mainGuestCheck.checked && acompanhantesQueVao.length === 0) {
+        showError(confirmErrorMsg, 'Selecione pelo menos uma pessoa do convite para confirmar presença.');
+        return;
+      }
 
       const payload = {
         nome_principal: globalGuestData.nome,
+        convidado_principal_vai: mainGuestCheck.checked,
         acompanhantes_permitidos: globalGuestData.permitidos,
         acompanhantes_que_vao: acompanhantesQueVao
       };
 
       toggleLoading(true);
+      setButtonsDisabled(true);
 
       try {
         const response = await fetch(SCRIPT_URL, {
@@ -279,13 +328,16 @@
         const result = await response.json();
         if (result.status === 'success') {
           goToStep(step3);
+        } else if (result.status === 'already_confirmed') {
+          showError(confirmErrorMsg, `Presença já confirmada anteriormente. Para dúvidas ou problemas, fale com a assessoria pelo <a href="${SUPPORT_WHATSAPP_URL}" target="_blank">${SUPPORT_LABEL}</a>.`);
         } else {
-          alert("Erro ao salvar dados na planilha.");
+          showError(confirmErrorMsg, result.message || `Erro ao salvar dados na planilha. Fale com a assessoria pelo <a href="${SUPPORT_WHATSAPP_URL}" target="_blank">${SUPPORT_LABEL}</a>.`);
         }
       } catch (error) {
-        alert("Erro de rede ao processar confirmação.");
+        showError(confirmErrorMsg, `Erro de rede ao processar confirmação. Tente novamente ou fale com a assessoria pelo <a href="${SUPPORT_WHATSAPP_URL}" target="_blank">${SUPPORT_LABEL}</a>.`);
       } finally {
         toggleLoading(false);
+        setButtonsDisabled(false);
       }
     });
   </script>

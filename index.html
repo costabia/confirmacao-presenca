@@ -17,6 +17,7 @@
       background-color: #faf9f7;
       color: #6f7253;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
@@ -122,6 +123,22 @@
       width: 40px; height: 40px; border: 1px solid #6f7253;
       border-top-color: #6f7253; border-radius: 50%; animation: spin 1s linear infinite;
     }
+    .site-credit {
+      width: calc(100% + 40px);
+      margin: 48px -20px 0;
+      padding: 38px 20px 28px;
+      border-top: 1px solid rgba(111, 114, 83, 0.24);
+      text-align: center;
+    }
+    .site-credit a {
+      color: rgba(111, 114, 83, 0.78);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .site-credit a:hover { color: #6f7253; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -175,6 +192,10 @@
       <div class="spinner"></div>
     </div>
   </main>
+
+  <footer class="site-credit" aria-label="Credito do site">
+    <a href="https://www.instagram.com/studiocoraoficial/" target="_blank" rel="noopener noreferrer">@studiocoraoficial</a>
+  </footer>
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_7vqW8ksYq5II7wCWy0jr5Hpq40aLkguQ0eZ20wr7r9bEGyIJFa7A5LGEEIuTpULi/exec';

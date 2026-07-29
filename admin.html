@@ -149,6 +149,28 @@
       font-size: 0.82rem;
       margin-top: 6px;
     }
+    .date-time {
+      align-items: center;
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .date-time span {
+      background: #f2f2ec;
+      border: 1px solid #deded4;
+      border-radius: 999px;
+      color: #555844;
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1;
+      padding: 6px 9px;
+      white-space: nowrap;
+    }
+    .date-time .time {
+      background: #e0e2d6;
+      color: #34372a;
+    }
     .cards {
       display: grid;
       gap: 14px;
@@ -364,13 +386,32 @@
       return items.join('; ');
     };
 
+    const formatDateTime = (value) => {
+      if (!value) return '-';
+
+      const text = String(value).trim();
+      const match = text.match(/^(\d{2}\/\d{2}\/\d{4})(?:\s+(\d{2}:\d{2})(?::\d{2})?)?$/);
+
+      if (!match) return text;
+
+      const day = match[1];
+      const time = match[2];
+
+      return `
+        <span class="date-time">
+          <span class="day">${day}</span>
+          ${time ? `<span class="time">${time}</span>` : ''}
+        </span>
+      `;
+    };
+
     const render = (data) => {
       document.getElementById('people-count').textContent = data.resumo.pessoas_confirmadas;
       document.getElementById('people-pending-count').textContent = data.resumo.pessoas_nao_confirmadas;
       document.getElementById('confirmed-invites').textContent = data.resumo.convites_confirmados;
       document.getElementById('pending-invites').textContent = data.resumo.convites_pendentes;
       document.getElementById('total-invites').textContent = data.resumo.total_convites;
-      document.getElementById('updated').textContent = `Atualizado em ${data.atualizado_em}`;
+      document.getElementById('updated').innerHTML = `Atualizado em ${formatDateTime(data.atualizado_em)}`;
 
       const confirmedBody = document.getElementById('confirmed-body');
       confirmedBody.innerHTML = '';
@@ -383,7 +424,7 @@
           <td class="center">${item.acompanhantes_permitidos}</td>
           <td class="center">${item.acompanhantes_confirmados}</td>
           <td>${formatList(item.todos_confirmados)}</td>
-          <td>${item.data_confirmacao || '-'}</td>
+          <td>${formatDateTime(item.data_confirmacao)}</td>
         `;
         confirmedBody.appendChild(row);
       });

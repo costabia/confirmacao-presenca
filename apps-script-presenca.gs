@@ -16,6 +16,16 @@ function separarAcompanhantes(valor) {
   });
 }
 
+function formatarDataHora(valor) {
+  if (!valor) return "";
+
+  if (Object.prototype.toString.call(valor) === "[object Date]" && !isNaN(valor.getTime())) {
+    return Utilities.formatDate(valor, Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm");
+  }
+
+  return valor.toString();
+}
+
 function buscarConvitePorNome(sheetLista, nomeNormalizado) {
   const dataLista = sheetLista.getDataRange().getValues();
 
@@ -81,7 +91,7 @@ function montarListaConfirmados(dataConfirmados) {
       nome_principal: dataConfirmados[i][0],
       acompanhantes_permitidos: Number(dataConfirmados[i][1]) || 0,
       acompanhantes_confirmados: Number(dataConfirmados[i][2]) || 0,
-      data_confirmacao: dataConfirmados[i][3] || "",
+      data_confirmacao: formatarDataHora(dataConfirmados[i][3]),
       titular_vai: dataConfirmados[i][4] || "",
       acompanhantes: separarAcompanhantes(dataConfirmados[i][5]),
       todos_confirmados: todosConfirmados
@@ -145,7 +155,7 @@ function doGetAdmin(e) {
 
   return jsonResponse({
     status: "success",
-    atualizado_em: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss"),
+    atualizado_em: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm"),
     resumo: {
       total_convites: totalConvites,
       convites_confirmados: convitesConfirmados,

@@ -156,19 +156,16 @@
       gap: 6px;
     }
     .date-time span {
-      background: #f2f2ec;
-      border: 1px solid #deded4;
       border-radius: 999px;
       color: #555844;
       display: inline-block;
       font-size: 0.78rem;
       font-weight: 600;
       line-height: 1;
-      padding: 6px 9px;
+      padding: 3px 6px;
       white-space: nowrap;
     }
     .date-time .time {
-      background: #e0e2d6;
       color: #34372a;
     }
     .cards {
@@ -390,17 +387,43 @@
       if (!value) return '-';
 
       const text = String(value).trim();
-      const match = text.match(/^(\d{2}\/\d{2}\/\d{4})(?:\s+(\d{2}:\d{2})(?::\d{2})?)?$/);
+      const brMatch = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::\d{2})?)?$/);
 
-      if (!match) return text;
+      if (brMatch) {
+        const day = brMatch[1].padStart(2, '0');
+        const month = brMatch[2].padStart(2, '0');
+        const year = brMatch[3];
+        const hour = brMatch[4] ? brMatch[4].padStart(2, '0') : '';
+        const minute = brMatch[5] || '';
 
-      const day = match[1];
-      const time = match[2];
+        return `
+          <span class="date-time">
+            <span class="day">${day}/${month}/${year}</span>
+            ${hour && minute ? `<span class="time">${hour}:${minute}</span>` : ''}
+          </span>
+        `;
+      }
+
+      const parsedDate = new Date(value);
+
+      if (Number.isNaN(parsedDate.getTime())) return text;
+
+      const day = parsedDate.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        timeZone: 'America/Sao_Paulo'
+      });
+      const time = parsedDate.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Sao_Paulo'
+      });
 
       return `
         <span class="date-time">
           <span class="day">${day}</span>
-          ${time ? `<span class="time">${time}</span>` : ''}
+          <span class="time">${time}</span>
         </span>
       `;
     };

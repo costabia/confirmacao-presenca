@@ -91,15 +91,22 @@ function montarListaConfirmados(dataConfirmados) {
   return confirmados;
 }
 
-function montarListaPendentes(dataLista, sheetConfirmados) {
+function montarListaPendentes(dataLista, dataConfirmados) {
   const pendentes = [];
+  const confirmadosPorNome = {};
+
+  for (let i = 1; i < dataConfirmados.length; i++) {
+    const nomeConfirmado = normalizarTexto(dataConfirmados[i][0]);
+    if (nomeConfirmado) {
+      confirmadosPorNome[nomeConfirmado] = true;
+    }
+  }
 
   for (let i = 1; i < dataLista.length; i++) {
     if (!normalizarTexto(dataLista[i][0])) continue;
 
     const nomeNormalizado = normalizarTexto(dataLista[i][0]);
-    const confirmacao = buscarConfirmacaoPorNome(sheetConfirmados, nomeNormalizado);
-    if (!confirmacao) {
+    if (!confirmadosPorNome[nomeNormalizado]) {
       pendentes.push({
         nome_principal: dataLista[i][0],
         acompanhantes_permitidos: Number(dataLista[i][1]) || 0,
@@ -130,7 +137,7 @@ function doGetAdmin(e) {
   const dataConfirmados = sheetConfirmados.getDataRange().getValues();
   const dataPortaria = sheetPortaria.getDataRange().getValues();
   const confirmados = montarListaConfirmados(dataConfirmados);
-  const pendentes = montarListaPendentes(dataLista, sheetConfirmados);
+  const pendentes = montarListaPendentes(dataLista, dataConfirmados);
   const totalConvites = contarLinhasComValor(dataLista, 0);
   const convitesConfirmados = confirmados.length;
   const pessoasConfirmadas = contarLinhasComValor(dataPortaria, 0);

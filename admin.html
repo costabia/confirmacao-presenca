@@ -88,6 +88,43 @@
       margin-top: 14px;
       padding: 12px;
     }
+    .loading-overlay {
+      align-items: center;
+      background: rgba(250, 249, 247, 0.82);
+      backdrop-filter: blur(3px);
+      display: flex;
+      inset: 0;
+      justify-content: center;
+      position: fixed;
+      z-index: 10;
+    }
+    .loader-card {
+      align-items: center;
+      background: #fff;
+      border: 1px solid #deded4;
+      border-radius: 6px;
+      box-shadow: 0 10px 28px rgba(111, 114, 83, 0.16);
+      color: #6f7253;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.78rem;
+      font-weight: 700;
+      gap: 14px;
+      letter-spacing: 0.08em;
+      padding: 24px 28px;
+      text-transform: uppercase;
+    }
+    .spinner {
+      animation: spin 0.75s linear infinite;
+      border: 3px solid #deded4;
+      border-top-color: #6f7253;
+      border-radius: 50%;
+      height: 36px;
+      width: 36px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
     .hidden { display: none !important; }
     .panel { padding: 28px; }
     .panel-header {
@@ -285,6 +322,12 @@
       </section>
     </section>
   </main>
+  <div id="loading-overlay" class="loading-overlay hidden" role="status" aria-live="polite" aria-label="Carregando painel">
+    <div class="loader-card">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Carregando painel</span>
+    </div>
+  </div>
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_7vqW8ksYq5II7wCWy0jr5Hpq40aLkguQ0eZ20wr7r9bEGyIJFa7A5LGEEIuTpULi/exec';
@@ -297,6 +340,7 @@
     const refreshButton = document.getElementById('refresh-button');
     const logoutButton = document.getElementById('logout-button');
     const loginError = document.getElementById('login-error');
+    const loadingOverlay = document.getElementById('loading-overlay');
 
     const showLoginError = (message) => {
       loginError.textContent = message;
@@ -306,8 +350,7 @@
     const setLoading = (loading) => {
       loginButton.disabled = loading;
       refreshButton.disabled = loading;
-      loginButton.textContent = loading ? 'Carregando...' : 'Entrar';
-      refreshButton.textContent = loading ? 'Atualizando...' : 'Atualizar';
+      loadingOverlay.classList.toggle('hidden', !loading);
     };
 
     const formatList = (items) => {
@@ -361,6 +404,8 @@
     const loadDashboard = async () => {
       setLoading(true);
       loginError.classList.add('hidden');
+      loginSection.classList.add('hidden');
+      panelSection.classList.remove('hidden');
 
       try {
         const response = await fetch(`${SCRIPT_URL}?action=admin&senha=${encodeURIComponent(PASSWORD)}`);
@@ -368,14 +413,16 @@
 
         if (data.status !== 'success') {
           showLoginError(data.message || 'Não foi possível carregar o painel.');
+          panelSection.classList.add('hidden');
+          loginSection.classList.remove('hidden');
           return;
         }
 
         render(data);
-        loginSection.classList.add('hidden');
-        panelSection.classList.remove('hidden');
       } catch (error) {
         showLoginError('Erro ao carregar os dados. Tente novamente.');
+        panelSection.classList.add('hidden');
+        loginSection.classList.remove('hidden');
       } finally {
         setLoading(false);
       }
